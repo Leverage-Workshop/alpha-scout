@@ -27,6 +27,9 @@ verification, so set `DATABASE_CA_CERT` to the PEM from Aiven console > service 
 
 **Local parity:** `docker-compose.yml` uses `timescale/timescaledb:2.30.2-pg18`.
 
+**Migrations on Aiven:** `0001_enable_timescaledb.sql` is applied and recorded in
+`schema_migrations`, so `npm run db:migrate` against Aiven picks up from there.
+
 ## Hosting: Vercel
 
 | | |
@@ -35,6 +38,8 @@ verification, so set `DATABASE_CA_CERT` to the PEM from Aiven console > service 
 | Project | `alpha-scout` |
 | Git | `Leverage-Workshop/alpha-scout`, production branch `main` |
 | Node | 24.x |
+
+Health checks: `/api/health/db` and `/api/health/ai` (both return 503 on failure).
 
 Environment variables (server-only, Production + Preview):
 
@@ -56,3 +61,12 @@ set in Vercel. For local Gateway calls, set `AI_GATEWAY_API_KEY` in `.env.local`
 
 Same pattern as `rouxtutor.leverageworkshop.com`. Keep the record unproxied so Vercel can
 issue and renew the TLS certificate.
+
+## Setup status
+
+- [x] Aiven service running, TimescaleDB enabled and verified
+- [x] Vercel project created, linked to GitHub, Node 24, Next.js preset
+- [x] `alphascout.leverageworkshop.com` added to Vercel and CNAME'd in Cloudflare; TLS issued
+- [x] AI Gateway reachable from Vercel via OIDC (`/api/health/ai` → 200)
+- [ ] Add `DATABASE_URL` and `DATABASE_CA_CERT` in Vercel (the Aiven connector can't read
+      credentials), then redeploy and confirm `/api/health/db` → 200
