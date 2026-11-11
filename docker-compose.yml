@@ -1,0 +1,21 @@
+# Local TimescaleDB-enabled Postgres. Versions match the Aiven service
+# (PostgreSQL 18, TimescaleDB 2.30.2).
+services:
+  db:
+    image: timescale/timescaledb:2.30.2-pg18
+    environment:
+      POSTGRES_USER: alpha_scout
+      POSTGRES_PASSWORD: alpha_scout
+      POSTGRES_DB: alpha_scout
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alpha_scout -d alpha_scout"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  db-data:
