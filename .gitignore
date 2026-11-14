@@ -21,3 +21,6 @@ next-env.d.ts
 *.pem
 *.tsbuildinfo
 npm-debug.log*
+
+# local tool logs
+excalidraw.log
