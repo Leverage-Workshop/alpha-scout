@@ -1,0 +1,30 @@
+{
+  "features": [
+    {
+      "id": "feat-001",
+      "name": "Phase 0 foundation",
+      "description": "Next.js 16 / React 19 / TypeScript app with Tailwind, Base UI, Vitest, local TimescaleDB via Docker Compose, SQL migrations, AI SDK + Gateway wiring, and /api/health/db + /api/health/ai endpoints (docs/PRODUCT.md §8 Phase 0).",
+      "dependencies": [],
+      "status": "done",
+      "evidence": "PR #1 (0aedb13) and PR #2 (a95eef7) merged to main. Production /api/health/ai returned 200 on 2026-11-13."
+    },
+    {
+      "id": "feat-002",
+      "name": "Production DB health",
+      "description": "Set DATABASE_URL and DATABASE_CA_CERT in Vercel (Production + Preview), redeploy, and confirm https://alphascout.leverageworkshop.com/api/health/db returns 200. Last open item in docs/INFRASTRUCTURE.md 'Setup status'.",
+      "dependencies": ["feat-001"],
+      "status": "blocked",
+      "blocked_on": "A human with Aiven console access must copy the credentials into Vercel; the Aiven connector cannot read them.",
+      "evidence": "2026-11-13: GET /api/health/db -> 503 {\"ok\":false,\"error\":\"database unreachable\"}."
+    },
+    {
+      "id": "feat-003",
+      "name": "Phase 1 product definition",
+      "description": "Product owner answers docs/PRODUCT.md §9 (query input, answer contents, instruments/granularity, similarity approach, single vs multi-user) and fills in functional requirements (§7). Afterwards, replace this entry with the concrete, approved MVP features.",
+      "dependencies": ["feat-001"],
+      "status": "blocked",
+      "blocked_on": "Product owner input. Do not add speculative research, ingestion or chat features before then.",
+      "evidence": ""
+    }
+  ]
+}
