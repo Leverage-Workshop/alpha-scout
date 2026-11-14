@@ -5,7 +5,7 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
 
 ## Current State
 
-**Last Updated:** 2026-11-13
+**Last Updated:** 2026-11-14
 **Active Feature:** none. The only open feature (feat-003) is blocked on the product owner.
 
 ### What's Done
@@ -34,6 +34,8 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
   `--quick` skips `next build`.
 - **Every finished request ships as a squash-merged PR** once checks are green (`AGENTS.md` "Shipping").
   The only checks are Vercel's, since `main` has no branch protection.
+- **Local app port is 3100** (`next dev -p 3100` / `next start -p 3100`): 3000 is used by other
+  local services. Vercel ignores this and sets its own port.
 - **PR template** at `.github/pull_request_template.md`. Core sections follow common industry guidance:
   summary/why, changes, how to review, test plan, risk/rollback. Migrations, config and screenshots are conditional.
 
@@ -43,6 +45,11 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
   The harness-creator validator scored 100/100 (baseline before the harness: 24/100).
 
 ## History
+
+### 2026-11-14: local port 3100
+
+- Pinned `npm run dev` / `npm start` to port 3100 (3000 is used by another local service).
+  `./init.sh` passed; `npm run dev` served `http://localhost:3100/` → 200.
 
 ### 2026-11-13: feat-002 production DB health
 

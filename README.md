@@ -18,7 +18,7 @@ cp .env.example .env.local      # defaults point at the local Docker DB
 npm run db:up                   # TimescaleDB 2.30.2 on Postgres 18, port 5432
 npm run db:migrate              # applies db/migrations/*.sql
 npm run db:check                # confirms timescaledb is enabled
-npm run dev
+npm run dev                     # http://localhost:3100
 ```
 
 Health endpoints:
