@@ -6,24 +6,24 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
 ## Current State
 
 **Last Updated:** 2026-11-13
-**Active Feature:** none. Every open feature is blocked on a human (see below).
+**Active Feature:** none. The only open feature (feat-003) is blocked on the product owner.
 
 ### What's Done
 
 - [x] feat-001 Phase 0 foundation (PR #1, PR #2)
-- [x] Agent harness added: `init.sh`, `feature_list.json`, `progress.md`, `session-handoff.md`
+- [x] Agent harness, PR template and shipping workflow (PR #3)
+- [x] feat-002 Production DB health: `/api/health/db` → 200 in production
 
 ### What's Next
 
-1. feat-002: once Vercel has `DATABASE_URL` + `DATABASE_CA_CERT`, redeploy and verify `/api/health/db` → 200,
-   then tick the box in `docs/INFRASTRUCTURE.md`.
-2. feat-003: once the product owner answers `docs/PRODUCT.md` §9, replace feat-003 with concrete,
+1. feat-003: once the product owner answers `docs/PRODUCT.md` §9, replace feat-003 with concrete,
    approved features (each with dependencies and a verifiable outcome).
 
 ## Blockers / Risks
 
-- **feat-002**: needs a human with Aiven console access; production DB health is 503 until then.
 - **feat-003**: product owner input. No product features are authorized yet.
+- **Local `.env.local` targets Aiven production** once filled in, so `db:migrate` locally migrates production.
+  Use the Docker DB for development work.
 - **Risk**: Aiven `developer-1` caps at 15 connections; the app pool uses `max: 5` per instance.
 
 ## Decisions Made
@@ -43,6 +43,13 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
   The harness-creator validator scored 100/100 (baseline before the harness: 24/100).
 
 ## History
+
+### 2026-11-13: feat-002 production DB health
+
+- The first attempt failed with `SELF_SIGNED_CERT_IN_CHAIN` because the CA was saved in Vercel as `DATABASE_CERT`.
+  Sensitive vars can't be renamed, so it was re-added as `DATABASE_CA_CERT` (Production + Preview).
+  `DATABASE_URL` was extended to Preview.
+- Verified `/api/health/db` → 200; ticked the last box in `docs/INFRASTRUCTURE.md`.
 
 ### 2026-11-13: harness setup
 

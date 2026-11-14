@@ -13,9 +13,8 @@
       "name": "Production DB health",
       "description": "Set DATABASE_URL and DATABASE_CA_CERT in Vercel (Production + Preview), redeploy, and confirm https://alphascout.leverageworkshop.com/api/health/db returns 200. Last open item in docs/INFRASTRUCTURE.md 'Setup status'.",
       "dependencies": ["feat-001"],
-      "status": "blocked",
-      "blocked_on": "A human with Aiven console access must copy the credentials into Vercel; the Aiven connector cannot read them.",
-      "evidence": "2026-11-13: GET /api/health/db -> 503 {\"ok\":false,\"error\":\"database unreachable\"}."
+      "status": "done",
+      "evidence": "2026-11-13: DATABASE_URL and DATABASE_CA_CERT set in Vercel for Production + Preview; after redeploy, GET https://alphascout.leverageworkshop.com/api/health/db -> 200 {\"ok\":true,\"postgresVersion\":\"18.6\",\"timescaleVersion\":\"2.30.2\"}."
     },
     {
       "id": "feat-003",

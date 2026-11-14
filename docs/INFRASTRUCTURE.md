@@ -68,5 +68,10 @@ issue and renew the TLS certificate.
 - [x] Vercel project created, linked to GitHub, Node 24, Next.js preset
 - [x] `alphascout.leverageworkshop.com` added to Vercel and CNAME'd in Cloudflare; TLS issued
 - [x] AI Gateway reachable from Vercel via OIDC (`/api/health/ai` → 200)
-- [ ] Add `DATABASE_URL` and `DATABASE_CA_CERT` in Vercel (the Aiven connector can't read
-      credentials), then redeploy and confirm `/api/health/db` → 200
+- [x] `DATABASE_URL` and `DATABASE_CA_CERT` set in Vercel (Production + Preview);
+      `/api/health/db` → 200 (2026-11-13)
+
+Both DB vars are Vercel **sensitive** variables. They can't be read back or renamed, so a typo in
+a key means deleting the variable and re-adding it. Copy local values from the Aiven console, not
+from Vercel. The app reads exactly `DATABASE_CA_CERT`; without it, `pg` fails with
+`SELF_SIGNED_CERT_IN_CHAIN`.
