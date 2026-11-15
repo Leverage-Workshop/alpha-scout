@@ -32,6 +32,14 @@
       "dependencies": ["feat-001"],
       "status": "done",
       "evidence": "2026-11-15: ./init.sh passed (lint, typecheck, 20 tests incl. route + component tests, build). Local `next start` with AI_MODEL_ID=openai/gpt-6-luna streamed a Markdown reply from /api/completion. The AI_MODEL_ID in .env.local (openai/gpt-6.1-luna) is not in the Gateway catalog and yields a stream error."
+    },
+    {
+      "id": "feat-005",
+      "name": "NFL team report tool (experiment)",
+      "description": "Product owner request (2026-11-15, exploratory): a getTeamReport AI tool that takes a team name and returns the NFL team's record, standing, next game and recent news from ESPN's public API. The landing chat (useChat, POST /api/chat) shows the tool call and the model's Markdown reply. Not part of the trading product; remove when no longer wanted.",
+      "dependencies": ["feat-004"],
+      "status": "done",
+      "evidence": "2026-11-15: ./init.sh passed (35 tests incl. team matching, news filtering, chat request validation, route and UI tests). Live POST /api/chat on the local dev server: the model called getTeamReport({team:'Eagles'}) -> 2-7, 4th in NFC East, 5 news items, then streamed a Markdown summary with an ESPN link."
     }
   ]
 }
