@@ -13,7 +13,8 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
 - [x] feat-001 Phase 0 foundation (PR #1, PR #2)
 - [x] Agent harness, PR template and shipping workflow (PR #3)
 - [x] feat-002 Production DB health: `/api/health/db` → 200 in production
-- [x] feat-004 Landing page prompt box: `/api/completion` streams the `AI_MODEL_ID` model's reply, rendered as Markdown
+- [x] feat-004 Landing page prompt box, rendered as streaming Markdown (now a chat on `POST /api/chat`)
+- [x] feat-005 NFL team report tool (experiment): `getTeamReport` via ESPN's public API, shown in the chat UI
 
 ### What's Next
 
@@ -25,10 +26,9 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
 - **feat-003**: product owner input. No product features are authorized yet.
 - **Local `.env.local` targets Aiven production** once filled in, so `db:migrate` locally migrates production.
   Use the Docker DB for development work.
-- **`AI_MODEL_ID` in `.env.local` (`openai/gpt-6.1-luna`) is not a Gateway model ID**, so `/api/completion` returns a stream error
-  until it is changed (e.g. `openai/gpt-6-luna`). The Vercel value is unverified.
-- **`/api/completion` is unauthenticated with no rate limit**: anyone with the URL can spend Gateway credits.
-  Prompts are capped at 4000 chars and responses at 4096 output tokens.
+- **`/api/chat` is unauthenticated with no rate limit**: anyone with the URL can spend Gateway credits.
+  Caps: 20 messages, 4000 chars per message, 4096 output tokens, 4 tool steps.
+- **feat-005 uses ESPN's unofficial, unauthenticated API**: it can change or break without notice.
 - **Risk**: Aiven `developer-1` caps at 15 connections; the app pool uses `max: 5` per instance.
 
 ## Decisions Made
@@ -43,6 +43,8 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
   local services. Vercel ignores this and sets its own port.
 - **Prompt box uses `useCompletion` (`@ai-sdk/react` 4.0.173, pinned to match `ai` 7.0.169) and Streamdown 2.7.1**
   for streaming Markdown. The product owner requested it directly (feat-004).
+- **The landing page is a `useChat` conversation** (replacing `useCompletion`) so tool calls can be shown. The
+  `/api/completion` route was removed. Tools live in `src/lib/ai/tools.ts`; `ChatMessage` types the UI parts.
 - **ESLint ignores `.claude/**` and `.agents/**`**: vendored skill example scripts broke `npm run lint` on `main`.
 - **PR template** at `.github/pull_request_template.md`. Core sections follow common industry guidance:
   summary/why, changes, how to review, test plan, risk/rollback. Migrations, config and screenshots are conditional.
@@ -53,6 +55,12 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
   The harness-creator validator scored 100/100 (baseline before the harness: 24/100).
 
 ## History
+
+### 2026-11-15: NFL team report tool (feat-005, experiment)
+
+- Added `getTeamReport` (team name → ESPN record, standing, next game, team-focused news) and switched the
+  landing page to `useChat` on `POST /api/chat` with `stopWhen: isStepCount(4)`. The UI shows each tool call.
+- `./init.sh` passed. A live local request called the tool for "Eagles" and streamed a grounded summary.
 
 ### 2026-11-15: landing page prompt box (feat-004)
 

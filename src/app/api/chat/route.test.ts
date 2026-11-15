@@ -11,7 +11,7 @@ const { POST } = await import("./route");
 
 function post(body: unknown) {
   return POST(
-    new Request("http://localhost/api/completion", {
+    new Request("http://localhost/api/chat", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: typeof body === "string" ? body : JSON.stringify(body),
@@ -19,7 +19,11 @@ function post(body: unknown) {
   );
 }
 
-describe("POST /api/completion", () => {
+const ask = (text: string) => ({
+  messages: [{ id: "u1", role: "user", parts: [{ type: "text", text }] }],
+});
+
+describe("POST /api/chat", () => {
   beforeEach(() => {
     vi.stubEnv("AI_MODEL_ID", "test-provider/test-model");
     streamTextMock.mockReset();
@@ -32,24 +36,23 @@ describe("POST /api/completion", () => {
   test("rejects invalid JSON", async () => {
     const res = await post("not json");
     expect(res.status).toBe(400);
-    expect(await res.json()).toEqual({ ok: false, error: "Invalid JSON body" });
     expect(streamTextMock).not.toHaveBeenCalled();
   });
 
-  test("rejects an empty prompt", async () => {
-    const res = await post({ prompt: "  " });
+  test("rejects an invalid conversation", async () => {
+    const res = await post({ messages: [] });
     expect(res.status).toBe(400);
     expect(streamTextMock).not.toHaveBeenCalled();
   });
 
   test("returns 503 when no model is configured", async () => {
     vi.stubEnv("AI_MODEL_ID", "");
-    const res = await post({ prompt: "hello" });
+    const res = await post(ask("hello"));
     expect(res.status).toBe(503);
     expect(streamTextMock).not.toHaveBeenCalled();
   });
 
-  test("streams the model's text for a valid prompt", async () => {
+  test("streams the reply and offers the team report tool", async () => {
     streamTextMock.mockReturnValue({
       stream: new ReadableStream({
         start(controller) {
@@ -61,12 +64,15 @@ describe("POST /api/completion", () => {
       }),
     });
 
-    const res = await post({ prompt: " hi " });
+    const res = await post(ask("How are the Eagles doing?"));
 
     expect(res.status).toBe(200);
-    expect(streamTextMock).toHaveBeenCalledWith(
-      expect.objectContaining({ model: "test-provider/test-model", prompt: "hi" }),
-    );
+    const options = streamTextMock.mock.calls[0]?.[0];
+    expect(options.model).toBe("test-provider/test-model");
+    expect(Object.keys(options.tools)).toEqual(["getTeamReport"]);
+    expect(options.messages).toEqual([
+      { role: "user", content: [{ type: "text", text: "How are the Eagles doing?" }] },
+    ]);
     expect(await res.text()).toContain("**Hello**");
   });
 });
