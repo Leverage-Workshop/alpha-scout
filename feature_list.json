@@ -24,6 +24,14 @@
       "status": "blocked",
       "blocked_on": "Product owner input. Do not add speculative research, ingestion or chat features before then.",
       "evidence": ""
+    },
+    {
+      "id": "feat-004",
+      "name": "Landing page prompt box",
+      "description": "Product owner request (2026-11-15): replace the landing page copy with a textbox that sends the prompt to the configured Gateway model (AI_MODEL_ID) via POST /api/completion and renders the streamed response as Markdown (Streamdown).",
+      "dependencies": ["feat-001"],
+      "status": "done",
+      "evidence": "2026-11-15: ./init.sh passed (lint, typecheck, 20 tests incl. route + component tests, build). Local `next start` with AI_MODEL_ID=openai/gpt-6-luna streamed a Markdown reply from /api/completion. The AI_MODEL_ID in .env.local (openai/gpt-6.1-luna) is not in the Gateway catalog and yields a stream error."
     }
   ]
 }

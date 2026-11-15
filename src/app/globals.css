@@ -1,4 +1,11 @@
 @import "tailwindcss";
+/* Streamdown ships Tailwind classes in its dist files; scan them so they get generated. */
+@source "../../node_modules/streamdown/dist/*.js";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
 
 :root {
   --background: #ffffff;

@@ -5,14 +5,15 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
 
 ## Current State
 
-**Last Updated:** 2026-11-14
-**Active Feature:** none. The only open feature (feat-003) is blocked on the product owner.
+**Last Updated:** 2026-11-15
+**Active Feature:** none. feat-003 (full product definition) is still blocked on the product owner.
 
 ### What's Done
 
 - [x] feat-001 Phase 0 foundation (PR #1, PR #2)
 - [x] Agent harness, PR template and shipping workflow (PR #3)
 - [x] feat-002 Production DB health: `/api/health/db` → 200 in production
+- [x] feat-004 Landing page prompt box: `/api/completion` streams the `AI_MODEL_ID` model's reply, rendered as Markdown
 
 ### What's Next
 
@@ -24,6 +25,10 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
 - **feat-003**: product owner input. No product features are authorized yet.
 - **Local `.env.local` targets Aiven production** once filled in, so `db:migrate` locally migrates production.
   Use the Docker DB for development work.
+- **`AI_MODEL_ID` in `.env.local` (`openai/gpt-6.1-luna`) is not a Gateway model ID**, so `/api/completion` returns a stream error
+  until it is changed (e.g. `openai/gpt-6-luna`). The Vercel value is unverified.
+- **`/api/completion` is unauthenticated with no rate limit**: anyone with the URL can spend Gateway credits.
+  Prompts are capped at 4000 chars and responses at 4096 output tokens.
 - **Risk**: Aiven `developer-1` caps at 15 connections; the app pool uses `max: 5` per instance.
 
 ## Decisions Made
@@ -36,6 +41,9 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
   The only checks are Vercel's, since `main` has no branch protection.
 - **Local app port is 3100** (`next dev -p 3100` / `next start -p 3100`): 3000 is used by other
   local services. Vercel ignores this and sets its own port.
+- **Prompt box uses `useCompletion` (`@ai-sdk/react` 4.0.173, pinned to match `ai` 7.0.169) and Streamdown 2.7.1**
+  for streaming Markdown. The product owner requested it directly (feat-004).
+- **ESLint ignores `.claude/**` and `.agents/**`**: vendored skill example scripts broke `npm run lint` on `main`.
 - **PR template** at `.github/pull_request_template.md`. Core sections follow common industry guidance:
   summary/why, changes, how to review, test plan, risk/rollback. Migrations, config and screenshots are conditional.
 
@@ -45,6 +53,13 @@ Running log for agent sessions. Update **Current State** in place; add a dated e
   The harness-creator validator scored 100/100 (baseline before the harness: 24/100).
 
 ## History
+
+### 2026-11-15: landing page prompt box (feat-004)
+
+- Replaced the landing copy with a textarea → `POST /api/completion` (validated, `streamText` via Gateway) →
+  streamed Markdown rendered by Streamdown. Added route, validation and component tests.
+- Fixed the lint baseline by ignoring vendored skill dirs. `./init.sh` passed; a local production server
+  with a valid model streamed a Markdown reply.
 
 ### 2026-11-14: local port 3100
 
